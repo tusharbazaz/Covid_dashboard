@@ -186,17 +186,7 @@ function App() {
         />
 
         <main className="w-full px-2 sm:px-4 py-4 sm:py-6">
-          
-          <section className="w-full">
-            {lastData && (
-              <>
-                <StatsCards stats={lastData.stats} />
-                {lastData.stats.analysis && (
-                  <AnalysisSummary analysis={lastData.stats.analysis} />
-                )}
-              </>
-            )}
-            <section className="w-full mb-6">
+          <section className="w-full mb-6">
             <Filters
               countries={countries}
               currentCountry={currentCountry}
@@ -216,6 +206,17 @@ function App() {
               showToast={showToast}
             />
           </section>
+          <section className="w-full">
+            
+            {lastData && (
+              <>
+                <StatsCards stats={lastData.stats} />
+                {lastData.stats.analysis && (
+                  <AnalysisSummary analysis={lastData.stats.analysis} />
+                )}
+              </>
+            )}
+            
 
             <ChartsSection 
               data={lastData}
