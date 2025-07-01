@@ -242,10 +242,10 @@ const TableRow = ({ country, index, onViewDetails, onAddToComparison }) => {
       <td className="text-right p-3 text-yellow-600 dark:text-yellow-400">
         {formatNumber(country.active)}
       </td>
-      <td className="text-center p-3">
+      <td className="text-right p-3">
         <button 
           onClick={() => onViewDetails(country.country)}
-          className="text-blue-500 hover:text-blue-700 mr-6 p-3 rounded transition"
+          className="text-blue-500 hover:text-blue-700 p-1 rounded transition"
           title="View details"
         >
           <i className="fas fa-chart-line"></i>
