@@ -77,7 +77,7 @@ const DeathChart = ({ data }) => {
         <select 
           value={metric}
           onChange={(e) => setMetric(e.target.value)}
-          className="text-sm p-2 border rounded dark:bg-gray-700"
+          className="text-sm p-2 border rounded bg-gray-100 dark:bg-gray-700"
         >
           <option value="daily">Daily Deaths</option>
           <option value="cumulative">Cumulative</option>
