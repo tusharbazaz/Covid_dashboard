@@ -35,9 +35,9 @@ const Filters = ({
           <label className="block text-sm font-medium mb-2">Country/Region</label>
           <select 
             value={currentCountry}
-            onChange={(e) => onCountryChange(e.target.value)}
+            onChange={e => onCountryChange(e.target.value)}
             className="w-full p-3 border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 
-                     focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                       focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           >
             <option value="global">🌍 Global</option>
             {countries.map(country => (
@@ -53,9 +53,9 @@ const Filters = ({
           <label className="block text-sm font-medium mb-2">Time Range</label>
           <select 
             value={currentDays}
-            onChange={(e) => onDaysChange(e.target.value)}
+            onChange={e => onDaysChange(e.target.value)}
             className="w-full p-3 border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 
-                     focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                       focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           >
             <option value="7">Last Week</option>
             <option value="30">Last Month</option>
@@ -66,14 +66,15 @@ const Filters = ({
           </select>
         </div>
         
-        {/* Continent Filter */}
+        {/*
+        // Continent Filter (commented out)
         <div>
           <label className="block text-sm font-medium mb-2">Continent</label>
           <select 
             value={continent}
             onChange={(e) => setContinent(e.target.value)}
             className="w-full p-3 border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 
-                     focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                       focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           >
             <option value="">All Continents</option>
             <option value="Asia">Asia</option>
@@ -84,15 +85,17 @@ const Filters = ({
             <option value="Australia-Oceania">Oceania</option>
           </select>
         </div>
-        
-        {/* Sort Options */}
+        */}
+
+        {/*
+        // Sort Options (commented out)
         <div>
           <label className="block text-sm font-medium mb-2">Sort By</label>
           <select 
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             className="w-full p-3 border dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 
-                     focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                       focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
           >
             <option value="cases">Total Cases</option>
             <option value="todayCases">New Cases</option>
@@ -102,6 +105,7 @@ const Filters = ({
             <option value="critical">Critical</option>
           </select>
         </div>
+        */}
       </div>
       
       {/* Action Buttons */}
@@ -119,7 +123,7 @@ const Filters = ({
         <button 
           onClick={handleExport}
           className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition 
-                   transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500"
+                     transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           <i className="fas fa-download mr-2"></i>Export Data
         </button>
@@ -128,7 +132,7 @@ const Filters = ({
         <button
           onClick={onHotspots}
           className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition 
-                   transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500"
+                     transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500"
         >
           <i className="fas fa-fire mr-2"></i>View Hotspots
         </button>
@@ -138,7 +142,7 @@ const Filters = ({
         <button
           onClick={onPredictions}
           className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition 
-                   transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                     transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500"
         >
           <i className="fas fa-crystal-ball mr-2"></i>Predictions
         </button>
