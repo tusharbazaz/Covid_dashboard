@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -39,13 +39,13 @@ function App() {
   const [showHotspots, setShowHotspots]       = useState(false);
   const [showPredictions, setShowPredictions] = useState(false);
 
-  // Apply theme & chart styling
+  // Theme & charts
   useChartTheme(darkMode);
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
   }, [darkMode]);
 
-  // Load countries on mount
+  // Load countries
   useEffect(() => {
     performanceMonitor.mark('app-init-start');
     api.getCountries()
@@ -53,14 +53,14 @@ function App() {
        .catch(() => showToast('Failed to load countries', 'error'));
   }, [showToast]);
 
-  // Core reload: accepts optional country override
-  const reload = useCallback(async (country = currentCountry) => {
+  // Core reload
+  const reload = useCallback(async () => {
     setLoading(true);
     performanceMonitor.mark('reload-start');
     try {
       const [stats, historical] = await Promise.all([
-        api.getStats(country),
-        api.getHistorical(country, currentDays)
+        api.getStats(currentCountry),
+        api.getHistorical(currentCountry, currentDays)
       ]);
       setLastData({ stats, historical });
       performanceMonitor.mark('reload-end');
@@ -72,15 +72,51 @@ function App() {
     }
   }, [currentCountry, currentDays, showToast]);
 
-  // Trigger reload on filters change
+  // Trigger reload on filter change
   useEffect(() => {
-    if (countries.length) {
-      reload();
-    }
-  }, [countries, currentCountry, currentDays, reload]);
+    if (countries.length) reload();
+  }, [countries, reload]);
 
-  // Export handler
-  const handleExport = useCallback(async () => {
+  // --- 1) Navbar refresh button handler ---
+  const onNavRefresh = () => {
+    setCurrentCountry('global');
+    reload();
+    showToast('Data refreshed (country reset to Global)', 'success');
+  };
+
+  // --- 2) Keyboard shortcuts (including Ctrl+R) ---
+  useKeyboardShortcuts([
+    {
+      key: 'r',
+      ctrl: true,
+      handler: () => {
+        setCurrentCountry('global');
+        reload();
+        showToast('Data refreshed (country reset to Global)', 'info');
+      }
+    },
+    { key: 'e', ctrl: true, handler: () => exportData(lastData, currentCountry) },
+    {
+      key: 'd',
+      ctrl: true,
+      handler: () => {
+        const next = !darkMode;
+        setDarkMode(next);
+        showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
+      }
+    },
+    { key: 'Escape', handler: () => { setShowComparison(false); setShowHotspots(false); setShowPredictions(false); } }
+  ]);
+
+  // --- 3) Auto-refresh every 5 mins ---
+  useAutoRefresh(() => {
+    setCurrentCountry('global');
+    reload();
+    showToast('Auto-refreshed data (country reset to Global)', 'info');
+  }, 5 * 60 * 1000);
+
+  // Export
+  const handleExport = async () => {
     if (!lastData) {
       showToast('No data to export', 'warning');
       return;
@@ -91,48 +127,9 @@ function App() {
     } catch {
       showToast('Failed to export data', 'error');
     }
-  }, [lastData, currentCountry, showToast]);
-
-  // Navbar "Refresh" button handler
-  const onNavRefresh = () => {
-    setCurrentCountry('global');
-    reload('global');
-    showToast('Data refreshed (reset to Global)', 'success');
   };
 
-  // Keyboard shortcuts
-  useKeyboardShortcuts([
-    {
-      key: 'r', ctrl: true,
-      handler: () => {
-        setCurrentCountry('global');
-        reload('global');
-        showToast('Data refreshed (reset to Global)', 'info');
-      }
-    },
-    { key: 'e', ctrl: true, handler: handleExport },
-    { key: 'd', ctrl: true, handler: () => {
-        const next = !darkMode;
-        setDarkMode(next);
-        showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
-      }
-    },
-    { key: 'Escape', handler: () => {
-        setShowComparison(false);
-        setShowHotspots(false);
-        setShowPredictions(false);
-      }
-    }
-  ]);
-
-  // Auto-refresh every 5 minutes
-  useAutoRefresh(() => {
-    setCurrentCountry('global');
-    reload('global');
-    showToast('Auto-refreshed (reset to Global)', 'info');
-  }, 5 * 60 * 1000);
-
-  // Show keyboard shortcuts help
+  // Shortcut help
   const showKeyboardShortcuts = () => {
     const shortcuts = [
       { keys: 'Ctrl+R', description: 'Refresh & reset to Global' },
@@ -156,7 +153,7 @@ function App() {
             setDarkMode(next);
             showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
           }}
-          onRefresh={onNavRefresh}
+          onRefresh={onNavRefresh}   {/* << hooked in here */}
         />
 
         <main className="w-full px-4 py-6 space-y-6">
@@ -182,16 +179,14 @@ function App() {
           {lastData && (
             <>
               <StatsCards stats={lastData.stats} />
-              {lastData.stats.analysis && (
-                <AnalysisSummary analysis={lastData.stats.analysis} />
-              )}
+              {lastData.stats.analysis && <AnalysisSummary analysis={lastData.stats.analysis} />}
             </>
           )}
 
           <ChartsSection data={lastData} country={currentCountry} countries={countries} />
 
-          {showComparison && <ComparisonSection countries={countries} showToast={showToast} />}
-          {showHotspots   && <HotspotsSection showToast={showToast} />}
+          {showComparison   && <ComparisonSection countries={countries} showToast={showToast} />}
+          {showHotspots     && <HotspotsSection showToast={showToast} />}
           {showPredictions && currentCountry !== 'global' && (
             <PredictionsSection country={currentCountry} showToast={showToast} />
           )}
