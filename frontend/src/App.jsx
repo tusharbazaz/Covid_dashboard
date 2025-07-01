@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -39,7 +39,7 @@ function App() {
   const [showHotspots, setShowHotspots]       = useState(false);
   const [showPredictions, setShowPredictions] = useState(false);
 
-  // Theme & charts
+  // Apply theme & chart styling
   useChartTheme(darkMode);
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -53,7 +53,7 @@ function App() {
        .catch(() => showToast('Failed to load countries', 'error'));
   }, [showToast]);
 
-  // Core reload function, accepts an optional country override
+  // Core reload: accepts optional country override
   const reload = useCallback(async (country = currentCountry) => {
     setLoading(true);
     performanceMonitor.mark('reload-start');
@@ -70,62 +70,17 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, [currentDays, showToast]);
+  }, [currentCountry, currentDays, showToast]);
 
-  // Trigger reload when countries list or filters change
+  // Trigger reload on filters change
   useEffect(() => {
     if (countries.length) {
       reload();
     }
   }, [countries, currentCountry, currentDays, reload]);
 
-  // 1) Navbar “Refresh” button handler
-  const onNavRefresh = () => {
-    setCurrentCountry('global');
-    reload('global');
-    showToast('Data refreshed (country reset to Global)', 'success');
-  };
-
-  // 2) Keyboard shortcuts, including Ctrl+R
-  useKeyboardShortcuts([
-    {
-      key: 'r',
-      ctrl: true,
-      handler: () => {
-        setCurrentCountry('global');
-        reload('global');
-        showToast('Data refreshed (country reset to Global)', 'info');
-      }
-    },
-    { key: 'e', ctrl: true, handler: () => exportData(lastData, currentCountry) },
-    {
-      key: 'd',
-      ctrl: true,
-      handler: () => {
-        const next = !darkMode;
-        setDarkMode(next);
-        showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
-      }
-    },
-    {
-      key: 'Escape',
-      handler: () => {
-        setShowComparison(false);
-        setShowHotspots(false);
-        setShowPredictions(false);
-      }
-    }
-  ]);
-
-  // 3) Auto-refresh every 5 minutes
-  useAutoRefresh(() => {
-    setCurrentCountry('global');
-    reload('global');
-    showToast('Auto-refreshed data (country reset to Global)', 'info');
-  }, 5 * 60 * 1000);
-
   // Export handler
-  const handleExport = async () => {
+  const handleExport = useCallback(async () => {
     if (!lastData) {
       showToast('No data to export', 'warning');
       return;
@@ -136,9 +91,48 @@ function App() {
     } catch {
       showToast('Failed to export data', 'error');
     }
+  }, [lastData, currentCountry, showToast]);
+
+  // Navbar "Refresh" button handler
+  const onNavRefresh = () => {
+    setCurrentCountry('global');
+    reload('global');
+    showToast('Data refreshed (reset to Global)', 'success');
   };
 
-  // Keyboard shortcuts help
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'r', ctrl: true,
+      handler: () => {
+        setCurrentCountry('global');
+        reload('global');
+        showToast('Data refreshed (reset to Global)', 'info');
+      }
+    },
+    { key: 'e', ctrl: true, handler: handleExport },
+    { key: 'd', ctrl: true, handler: () => {
+        const next = !darkMode;
+        setDarkMode(next);
+        showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
+      }
+    },
+    { key: 'Escape', handler: () => {
+        setShowComparison(false);
+        setShowHotspots(false);
+        setShowPredictions(false);
+      }
+    }
+  ]);
+
+  // Auto-refresh every 5 minutes
+  useAutoRefresh(() => {
+    setCurrentCountry('global');
+    reload('global');
+    showToast('Auto-refreshed (reset to Global)', 'info');
+  }, 5 * 60 * 1000);
+
+  // Show keyboard shortcuts help
   const showKeyboardShortcuts = () => {
     const shortcuts = [
       { keys: 'Ctrl+R', description: 'Refresh & reset to Global' },
