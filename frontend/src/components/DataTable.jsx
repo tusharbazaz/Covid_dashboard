@@ -146,7 +146,7 @@ const DataTable = ({ countries, onViewDetails, showToast }) => {
                 onSort={handleSort}
                 align="right"
               />
-              <th className="text-center p-3">Actions</th>
+              <th className="text-center pl-6 pr-3 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
