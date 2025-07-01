@@ -86,7 +86,7 @@ const DataTable = ({ countries, onViewDetails, showToast }) => {
           <select
             value={selectedContinent}
             onChange={(e) => setSelectedContinent(e.target.value)}
-            className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            className="p-2 border rounded bg-gray-100 dark:bg-gray-700 dark:border-gray-600"
           >
             <option value="">All Continents</option>
             {continents.map(continent => (
@@ -98,7 +98,7 @@ const DataTable = ({ countries, onViewDetails, showToast }) => {
             placeholder="Search countries..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600 flex-1 sm:flex-initial"
+            className="p-2 border rounded bg-gray-100 dark:bg-gray-700 dark:border-gray-600 flex-1 sm:flex-initial"
           />
         </div>
       </div>
