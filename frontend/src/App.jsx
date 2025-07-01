@@ -130,27 +130,17 @@ function App() {
   };
 
   // Shortcut help
-  const showKeyboardShortcuts = () => {
-    if (document.getElementById('shortcuts-modal')) return;
-    const modal = document.createElement('div');
-    modal.id = 'shortcuts-modal';
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-    modal.innerHTML = `
-      <div class="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded-lg max-w-md w-full mx-4">
-        <h3 class="text-lg font-semibold mb-4">Keyboard Shortcuts</h3>
-        <div class="space-y-2 text-sm">
-          <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+R</kbd> Refresh data</div>
-          <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+E</kbd> Export data</div>
-          <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+D</kbd> Toggle dark mode</div>
-          <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+F</kbd> Focus search</div>
-          <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+H</kbd> Show shortcuts</div>
-          <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Esc</kbd> Close modals</div>
-        </div>
-        <button onclick="document.getElementById('shortcuts-modal')?.remove()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Close</button>
-      </div>
-    `;
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
-    document.body.appendChild(modal);
+  const showKeyboardShortcuts = () => {Add commentMore actions
+    const shortcuts = [
+      { keys: 'Ctrl+R', description: 'Refresh & reset to Global' },
+      { keys: 'Ctrl+E', description: 'Export data' },
+      { keys: 'Ctrl+D', description: 'Toggle dark mode' },
+      { keys: 'Esc',    description: 'Close modals' }
+    ];
+    alert(
+      'Keyboard Shortcuts:\n\n' +
+      shortcuts.map(s => `${s.keys}: ${s.description}`).join('\n')
+    );
   };
 
   return (
