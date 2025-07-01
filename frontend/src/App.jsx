@@ -86,27 +86,60 @@ function App() {
 
   // --- 2) Keyboard shortcuts (including Ctrl+R) ---
   useKeyboardShortcuts([
-    {
-      key: 'r',
-      ctrl: true,
-      handler: () => {
-        setCurrentCountry('global');
-        reload();
-        showToast('Data refreshed (country reset to Global)', 'info');
+  {
+    key: 'r',
+    ctrl: true,
+    handler: () => {
+      setCurrentCountry('global');
+      reload();
+      showToast('Data refreshed (country reset to Global)', 'info');
+    }
+  },
+  {
+    key: 'e',
+    ctrl: true,
+    handler: () => exportData(lastData, currentCountry)
+  },
+  {
+    key: 'd',
+    ctrl: true,
+    handler: () => {
+      const next = !darkMode;
+      setDarkMode(next);
+      showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
+    }
+  },
+  {
+    key: 'f',
+    ctrl: true,
+    handler: () => {
+      const input = document.querySelector('input[type="search"], input#search');
+      if (input) {
+        input.focus();
+        input.select();
+        showToast('Focused search input', 'info');
+      } else {
+        showToast('Search input not found', 'warning');
       }
-    },
-    { key: 'e', ctrl: true, handler: () => exportData(lastData, currentCountry) },
-    {
-      key: 'd',
-      ctrl: true,
-      handler: () => {
-        const next = !darkMode;
-        setDarkMode(next);
-        showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
-      }
-    },
-    { key: 'Escape', handler: () => { setShowComparison(false); setShowHotspots(false); setShowPredictions(false); } }
-  ]);
+    }
+  },
+  {
+    key: 'h',
+    ctrl: true,
+    handler: () => {
+      showKeyboardShortcuts();
+    }
+  },
+  {
+    key: 'Escape',
+    handler: () => {
+      setShowComparison(false);
+      setShowHotspots(false);
+      setShowPredictions(false);
+    }
+  }
+]);
+
 
   // --- 3) Auto-refresh every 5 mins ---
   useAutoRefresh(() => {
@@ -143,7 +176,7 @@ function App() {
       <div class="space-y-2 text-sm">
         <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+R</kbd> Refresh data</div>
         <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+E</kbd> Export data</div>
-        <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+D</kbd> Toggle dark mode</div>
+        <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+D</kbd> Toggle mode</div>
         <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+F</kbd> Focus search</div>
         <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+H</kbd> Show shortcuts</div>
         <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Esc</kbd> Close modals</div>
