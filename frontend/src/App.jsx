@@ -81,7 +81,7 @@ function App() {
   const onNavRefresh = () => {
     setCurrentCountry('global');
     reload();
-    showToast('Data refreshed (country reset to Global)', 'success');
+    showToast('Data refreshed', 'success');
   };
 
   // --- 2) Keyboard shortcuts (including Ctrl+R) ---
