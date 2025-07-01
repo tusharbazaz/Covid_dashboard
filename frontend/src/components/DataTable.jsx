@@ -250,13 +250,13 @@ const TableRow = ({ country, index, onViewDetails, onAddToComparison }) => {
         >
           <i className="fas fa-chart-line"></i>
         </button>
-        <button 
+{/*         <button 
           onClick={() => onAddToComparison(country)}
           className="text-green-500 hover:text-green-700 p-1 rounded transition"
           title="Add to comparison"
         >
           <i className="fas fa-plus"></i>
-        </button>
+        </button> */}
       </td>
     </tr>
   );
