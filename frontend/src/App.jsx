@@ -46,11 +46,16 @@ function App() {
   }, [darkMode]);
 
   // Load countries
+  // useEffect(() => {
+  //   performanceMonitor.mark('app-init-start');
+  //   api.getCountries()
+  //      .then(setCountries)
+  //      .catch(() => showToast('Failed to load countries', 'error'));
+  // }, [showToast]);
   useEffect(() => {
     performanceMonitor.mark('app-init-start');
-    api.getCountries()
-       .then(setCountries)
-       .catch(() => showToast('Failed to load countries', 'error'));
+    loadCountries();
+    reload('global');
   }, [showToast]);
 
   // Core reload
