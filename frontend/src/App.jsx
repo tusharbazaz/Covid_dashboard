@@ -45,27 +45,22 @@ function App() {
     document.documentElement.classList.toggle('dark', darkMode);
   }, [darkMode]);
 
-  // Load countries
-  // useEffect(() => {
-  //   performanceMonitor.mark('app-init-start');
-  //   api.getCountries()
-  //      .then(setCountries)
-  //      .catch(() => showToast('Failed to load countries', 'error'));
-  // }, [showToast]);
+  // Load countries on mount
   useEffect(() => {
     performanceMonitor.mark('app-init-start');
-    loadCountries();
-    reload('global');
+    api.getCountries()
+       .then(setCountries)
+       .catch(() => showToast('Failed to load countries', 'error'));
   }, [showToast]);
 
-  // Core reload
-  const reload = useCallback(async () => {
+  // Core reload function, accepts an optional country override
+  const reload = useCallback(async (country = currentCountry) => {
     setLoading(true);
     performanceMonitor.mark('reload-start');
     try {
       const [stats, historical] = await Promise.all([
-        api.getStats(currentCountry),
-        api.getHistorical(currentCountry, currentDays)
+        api.getStats(country),
+        api.getHistorical(country, currentDays)
       ]);
       setLastData({ stats, historical });
       performanceMonitor.mark('reload-end');
@@ -75,28 +70,30 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, [currentCountry, currentDays, showToast]);
+  }, [currentDays, showToast]);
 
-  // Trigger reload on filter change
+  // Trigger reload when countries list or filters change
   useEffect(() => {
-    if (countries.length) reload();
-  }, [countries, reload]);
+    if (countries.length) {
+      reload();
+    }
+  }, [countries, currentCountry, currentDays, reload]);
 
-  // --- 1) Navbar refresh button handler ---
+  // 1) Navbar “Refresh” button handler
   const onNavRefresh = () => {
     setCurrentCountry('global');
-    reload();
+    reload('global');
     showToast('Data refreshed (country reset to Global)', 'success');
   };
 
-  // --- 2) Keyboard shortcuts (including Ctrl+R) ---
+  // 2) Keyboard shortcuts, including Ctrl+R
   useKeyboardShortcuts([
     {
       key: 'r',
       ctrl: true,
       handler: () => {
         setCurrentCountry('global');
-        reload();
+        reload('global');
         showToast('Data refreshed (country reset to Global)', 'info');
       }
     },
@@ -110,17 +107,24 @@ function App() {
         showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
       }
     },
-    { key: 'Escape', handler: () => { setShowComparison(false); setShowHotspots(false); setShowPredictions(false); } }
+    {
+      key: 'Escape',
+      handler: () => {
+        setShowComparison(false);
+        setShowHotspots(false);
+        setShowPredictions(false);
+      }
+    }
   ]);
 
-  // --- 3) Auto-refresh every 5 mins ---
+  // 3) Auto-refresh every 5 minutes
   useAutoRefresh(() => {
     setCurrentCountry('global');
-    reload();
+    reload('global');
     showToast('Auto-refreshed data (country reset to Global)', 'info');
   }, 5 * 60 * 1000);
 
-  // Export
+  // Export handler
   const handleExport = async () => {
     if (!lastData) {
       showToast('No data to export', 'warning');
@@ -134,7 +138,7 @@ function App() {
     }
   };
 
-  // Shortcut help
+  // Keyboard shortcuts help
   const showKeyboardShortcuts = () => {
     const shortcuts = [
       { keys: 'Ctrl+R', description: 'Refresh & reset to Global' },
@@ -158,7 +162,7 @@ function App() {
             setDarkMode(next);
             showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
           }}
-          onRefresh={onNavRefresh}   {/* << hooked in here */}
+          onRefresh={onNavRefresh}
         />
 
         <main className="w-full px-4 py-6 space-y-6">
@@ -184,14 +188,16 @@ function App() {
           {lastData && (
             <>
               <StatsCards stats={lastData.stats} />
-              {lastData.stats.analysis && <AnalysisSummary analysis={lastData.stats.analysis} />}
+              {lastData.stats.analysis && (
+                <AnalysisSummary analysis={lastData.stats.analysis} />
+              )}
             </>
           )}
 
           <ChartsSection data={lastData} country={currentCountry} countries={countries} />
 
-          {showComparison   && <ComparisonSection countries={countries} showToast={showToast} />}
-          {showHotspots     && <HotspotsSection showToast={showToast} />}
+          {showComparison && <ComparisonSection countries={countries} showToast={showToast} />}
+          {showHotspots   && <HotspotsSection showToast={showToast} />}
           {showPredictions && currentCountry !== 'global' && (
             <PredictionsSection country={currentCountry} showToast={showToast} />
           )}
