@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
-import { Line } from 'react-chartjs-2';
+import { useState, useRef } from 'react';
+import { Line, Bar } from 'react-chartjs-2';
 import { formatDate, formatNumber, calculateMovingAverage } from '../../utils/formatters';
 import { defaultChartOptions } from '../../config/chartConfig';
 
-const TrendsChart = ({ data, type = 'line' }) => {
+const TrendsChart = ({ data }) => {
+  const [chartType, setChartType] = useState('line');
   const chartRef = useRef(null);
 
   if (!data || !data.dates) return null;
@@ -84,21 +85,25 @@ const TrendsChart = ({ data, type = 'line' }) => {
         <h3 className="font-semibold text-lg">Daily Trends</h3>
         <div className="flex gap-2">
           <button 
-            className={`chart-type-btn ${type === 'line' ? 'active' : ''}`}
-            onClick={() => {/* Handle type change */}}
+            className={`chart-type-btn ${chartType === 'line' ? 'active' : ''}`}
+            onClick={() => setChartType('line')}
           >
             Line
           </button>
           <button 
-            className={`chart-type-btn ${type === 'bar' ? 'active' : ''}`}
-            onClick={() => {/* Handle type change */}}
+            className={`chart-type-btn ${chartType === 'bar' ? 'active' : ''}`}
+            onClick={() => setChartType('bar')}
           >
             Bar
           </button>
         </div>
       </div>
       <div className="chart-sm">
-        <Line ref={chartRef} data={chartData} options={options} />
+        {chartType === 'bar' ? (
+          <Bar ref={chartRef} data={chartData} options={options} />
+        ) : (
+          <Line ref={chartRef} data={chartData} options={options} />
+        )}
       </div>
     </div>
   );
