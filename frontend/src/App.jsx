@@ -130,15 +130,6 @@ function App() {
   };
 
   // Shortcut help
-  useKeyboardShortcuts([
-    { key: 'r', ctrl: true, handler: () => { reload('global'); showToast('Data refreshed', 'info'); } },
-    { key: 'e', ctrl: true, handler: handleExport },
-    { key: 'd', ctrl: true, handler: toggleTheme },
-    { key: 'f', ctrl: true, handler: () => { document.querySelector('input[type="text"]')?.focus(); } },
-    { key: 'Escape', handler: closeAllModals },
-    { key: 'h', ctrl: true, handler: () => { showKeyboardShortcuts(); } }
-  ]);
-
   const showKeyboardShortcuts = () => {
     if (document.getElementById('shortcuts-modal')) return;
     const modal = document.createElement('div');
