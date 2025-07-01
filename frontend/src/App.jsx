@@ -178,7 +178,7 @@ function App() {
         <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+E</kbd> Export data</div>
         <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+D</kbd> Toggle mode</div>
         <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+F</kbd> Focus search</div>
-        <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+H</kbd> Show shortcuts</div>
+        <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Ctrl+/</kbd> Show shortcuts</div>
         <div><kbd class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Esc</kbd> Close modals</div>
       </div>
       <button 
