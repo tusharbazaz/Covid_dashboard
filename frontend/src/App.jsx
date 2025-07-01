@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+
 import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/Navbar';
 import Filters from './components/Filters';
@@ -13,6 +14,7 @@ import ToastContainer from './components/ToastContainer';
 import ComparisonSection from './components/ComparisonSection';
 import HotspotsSection from './components/HotspotsSection';
 import PredictionsSection from './components/PredictionsSection';
+
 import { api } from './services/api';
 import { useToast } from './hooks/useToast';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
@@ -37,13 +39,13 @@ function App() {
   const [showHotspots, setShowHotspots]       = useState(false);
   const [showPredictions, setShowPredictions] = useState(false);
 
-  // Theme & chart
+  // Theme & charts
   useChartTheme(darkMode);
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
   }, [darkMode]);
 
-  // Load country list once
+  // Load countries
   useEffect(() => {
     performanceMonitor.mark('app-init-start');
     api.getCountries()
@@ -51,7 +53,7 @@ function App() {
        .catch(() => showToast('Failed to load countries', 'error'));
   }, [showToast]);
 
-  // Core reload function
+  // Core reload
   const reload = useCallback(async () => {
     setLoading(true);
     performanceMonitor.mark('reload-start');
@@ -70,21 +72,19 @@ function App() {
     }
   }, [currentCountry, currentDays, showToast]);
 
-  // Trigger reload whenever countries list or filters change
+  // Trigger reload on filter change
   useEffect(() => {
     if (countries.length) reload();
   }, [countries, reload]);
 
-  // === Override refresh handlers to reset country to global ===
-
-  // 1) Navbar “Refresh” button
+  // --- 1) Navbar refresh button handler ---
   const onNavRefresh = () => {
     setCurrentCountry('global');
     reload();
     showToast('Data refreshed (country reset to Global)', 'success');
   };
 
-  // 2) Ctrl+R shortcut
+  // --- 2) Keyboard shortcuts (including Ctrl+R) ---
   useKeyboardShortcuts([
     {
       key: 'r',
@@ -96,20 +96,31 @@ function App() {
       }
     },
     { key: 'e', ctrl: true, handler: () => exportData(lastData, currentCountry) },
-    { key: 'd', ctrl: true, handler: () => { setDarkMode(d => !d); showToast('Toggled theme', 'info'); } },
-    { key: 'Escape', handler: () => { setShowComparison(false); setShowHotspots(false); setShowPredictions(false); } },
+    {
+      key: 'd',
+      ctrl: true,
+      handler: () => {
+        const next = !darkMode;
+        setDarkMode(next);
+        showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
+      }
+    },
+    { key: 'Escape', handler: () => { setShowComparison(false); setShowHotspots(false); setShowPredictions(false); } }
   ]);
 
-  // 3) Auto-refresh every 5 minutes
+  // --- 3) Auto-refresh every 5 mins ---
   useAutoRefresh(() => {
     setCurrentCountry('global');
     reload();
     showToast('Auto-refreshed data (country reset to Global)', 'info');
   }, 5 * 60 * 1000);
 
-  // Export handler remains unchanged
+  // Export
   const handleExport = async () => {
-    if (!lastData) return showToast('No data to export', 'warning');
+    if (!lastData) {
+      showToast('No data to export', 'warning');
+      return;
+    }
     try {
       await exportData(lastData, currentCountry);
       showToast('Data exported successfully', 'success');
@@ -118,7 +129,7 @@ function App() {
     }
   };
 
-  // Keyboard help (unchanged)
+  // Shortcut help
   const showKeyboardShortcuts = () => {
     const shortcuts = [
       { keys: 'Ctrl+R', description: 'Refresh & reset to Global' },
@@ -126,19 +137,26 @@ function App() {
       { keys: 'Ctrl+D', description: 'Toggle dark mode' },
       { keys: 'Esc',    description: 'Close modals' }
     ];
-    alert('Keyboard Shortcuts:\n\n' + shortcuts.map(s => `${s.keys}: ${s.description}`).join('\n'));
+    alert(
+      'Keyboard Shortcuts:\n\n' +
+      shortcuts.map(s => `${s.keys}: ${s.description}`).join('\n')
+    );
   };
 
   return (
     <ErrorBoundary>
       <div className="w-screen min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-        <Navbar 
+        <Navbar
           darkMode={darkMode}
-          toggleTheme={() => setDarkMode(d => !d)}
-          onRefresh={onNavRefresh}             {/* <-- use our new handler */}
+          toggleTheme={() => {
+            const next = !darkMode;
+            setDarkMode(next);
+            showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
+          }}
+          onRefresh={onNavRefresh}   {/* << hooked in here */}
         />
 
-        <main className="w-full px-2 sm:px-4 py-4 sm:py-6 space-y-6">
+        <main className="w-full px-4 py-6 space-y-6">
           <Filters
             countries={countries}
             currentCountry={currentCountry}
@@ -161,23 +179,24 @@ function App() {
           {lastData && (
             <>
               <StatsCards stats={lastData.stats} />
-              {lastData.stats.analysis && (
-                <AnalysisSummary analysis={lastData.stats.analysis} />
-              )}
+              {lastData.stats.analysis && <AnalysisSummary analysis={lastData.stats.analysis} />}
             </>
           )}
 
           <ChartsSection data={lastData} country={currentCountry} countries={countries} />
 
-          {showComparison && <ComparisonSection countries={countries} showToast={showToast} />}
-          {showHotspots   && <HotspotsSection showToast={showToast} />}
+          {showComparison   && <ComparisonSection countries={countries} showToast={showToast} />}
+          {showHotspots     && <HotspotsSection showToast={showToast} />}
           {showPredictions && currentCountry !== 'global' && (
             <PredictionsSection country={currentCountry} showToast={showToast} />
           )}
 
           <DataTable
             countries={countries}
-            onViewDetails={c => { setCurrentCountry(c); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            onViewDetails={c => {
+              setCurrentCountry(c);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             showToast={showToast}
           />
         </main>
