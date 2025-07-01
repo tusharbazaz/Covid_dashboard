@@ -102,7 +102,7 @@ const RankingChart = ({ countries }) => {
         <select 
           value={metric}
           onChange={(e) => setMetric(e.target.value)}
-          className="text-sm p-2 border rounded dark:bg-gray-700"
+          className="text-sm p-2 border rounded bg-gray-100 dark:bg-gray-700"
         >
           <option value="cases">By Cases</option>
           <option value="deaths">By Deaths</option>
