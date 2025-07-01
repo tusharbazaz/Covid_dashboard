@@ -124,7 +124,7 @@ function App() {
     }
   },
   {
-    key: 'h',
+    key: '/',
     ctrl: true,
     handler: () => {
       showKeyboardShortcuts();
@@ -263,7 +263,7 @@ function App() {
         <button
           onClick={showKeyboardShortcuts}
           className="fixed bottom-4 right-4 bg-gray-600 text-white p-3 rounded-full shadow-lg z-40 hover:bg-gray-700 transition"
-          title="Keyboard shortcuts (Ctrl+H)"
+          title="Keyboard shortcuts (Ctrl+/)"
         >
           <i className="fas fa-question-circle"></i>
         </button>
