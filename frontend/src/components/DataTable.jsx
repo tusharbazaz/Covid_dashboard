@@ -146,7 +146,11 @@ const DataTable = ({ countries, onViewDetails, showToast }) => {
                 onSort={handleSort}
                 align="right"
               />
-              <th className="text-right pl-6 pr-3 py-3">Actions</th>
+              <th className="p-3 text-right">
+      <div className="flex justify-end">
+        Actions
+      </div>
+    </th>
             </tr>
           </thead>
           <tbody>
@@ -242,14 +246,16 @@ const TableRow = ({ country, index, onViewDetails, onAddToComparison }) => {
       <td className="text-right p-3 text-yellow-600 dark:text-yellow-400">
         {formatNumber(country.active)}
       </td>
-      <td className="text-right p-3">
-        <button 
-          onClick={() => onViewDetails(country.country)}
-          className="text-blue-500 hover:text-blue-700 p-1 rounded transition"
-          title="View details"
-        >
-          <i className="fas fa-chart-line"></i>
-        </button>
+      <td className="p-3">
+        <div className="flex justify-end space-x-1">
+          <button
+            onClick={() => onViewDetails(country.country)}
+            className="text-blue-500 hover:text-blue-700 p-1 rounded transition"
+            title="View details"
+          >
+            <i className="fas fa-chart-line"></i>
+          </button>
+          </div>
 {/*         <button 
           onClick={() => onAddToComparison(country)}
           className="text-green-500 hover:text-green-700 p-1 rounded transition"
