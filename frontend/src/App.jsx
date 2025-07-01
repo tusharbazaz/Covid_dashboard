@@ -153,7 +153,7 @@ function App() {
             setDarkMode(next);
             showToast(`${next ? 'Dark' : 'Light'} mode enabled`, 'info');
           }}
-          onRefresh={onNavRefresh}   {/* << hooked in here */}
+          onRefresh={onNavRefresh}
         />
 
         <main className="w-full px-4 py-6 space-y-6">
